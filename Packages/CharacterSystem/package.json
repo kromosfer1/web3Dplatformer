@@ -1,0 +1,16 @@
+{
+  "name": "com.robotdreams.charactersystem",
+  "version": "1.0.0",
+  "displayName": "Character System",
+  "description": "This is an example package",
+  "unity": "2022.3",
+  "unityRelease": "12f1",
+  "documentationUrl": "",
+  "changelogUrl": "",
+  "licensesUrl": "",
+  "author": {
+    "name": "RobotDreams",
+    "email": "info@robotdreams.com",
+    "url": "https://www.robotdreams.com"
+  }
+}

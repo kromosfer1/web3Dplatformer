@@ -1,0 +1,18 @@
+{
+    "name": "com.robotdreams.charactersystem.editor",
+    "rootNamespace": "RobotDreamsCharacterSystem.Editor",
+    "references": [
+        "GUID:ca8f14d3a5d6a2e47a5d3db4298f4546"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
