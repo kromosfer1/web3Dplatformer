@@ -1,6 +1,8 @@
+using CHARK.ScriptableEvents.Events;
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 namespace RobotDreams.CharacterSystem
 {
@@ -16,7 +18,14 @@ namespace RobotDreams.CharacterSystem
                     : characterEventHandler;
             }
         }
-
+        private void OnEnable()
+        {
+            CharacterEventHandler.OnReviveRequested.AddListener(ReviveCharacter);
+        }
+        private void OnDisable()
+        {
+            CharacterEventHandler.OnReviveRequested.RemoveListener(ReviveCharacter);
+        }
         private void Start()
         {
             ReviveCharacter();
@@ -32,7 +41,7 @@ namespace RobotDreams.CharacterSystem
         {
             CurrentHealth -= damage;
             CharacterEventHandler.OnCharacterTakeDamage.Invoke();
-            if (CurrentHealth < 0)
+            if (CurrentHealth <= 0)
             {
                 CurrentHealth = 0;
                 KillCharacter();
@@ -41,8 +50,16 @@ namespace RobotDreams.CharacterSystem
 
         public override void ReviveCharacter()
         {
-            base.ReviveCharacter();
+            base.ReviveCharacter();                   
             CurrentHealth = HealthData.MaxHealth;
+            CharacterEventHandler.OnCharacterRevive.Invoke();
+        }
+
+        public override void KillCharacter()
+        {
+            base.KillCharacter();
+            characterEventHandler.OnCharacterDeath.Invoke();        
+
         }
     }
 }

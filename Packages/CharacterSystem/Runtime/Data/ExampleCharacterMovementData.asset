@@ -12,5 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a2ac9bf8cbea0f644b28f02b98e7e042, type: 3}
   m_Name: ExampleCharacterMovementData
   m_EditorClassIdentifier: 
-  MaxSpeed: 4
-  JumpForce: 3
+  MaxSpeed: 5.7
+  JumpForce: 4.6
+  CrouchingSpeed: 1
+  NormalHeight: 1.87
+  CrouchHeight: 0.87
+  CharacterOffset: {x: 0, y: 1, z: 0}

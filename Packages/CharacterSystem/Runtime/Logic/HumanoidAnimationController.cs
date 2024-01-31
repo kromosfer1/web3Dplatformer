@@ -20,17 +20,27 @@ namespace RobotDreams.CharacterSystem
 
         private const string speedId = "Speed";
         private const string jumpId = "Jump";
+        private const string deathId = "Death";
+        private const string ReviveId = "Revive";
         private const string groundedId = "IsGrounded";
+        private const string crouchId = "Crouch";
 
         private void OnEnable()
         {
             CharacterEventHandler.OnCharacterJumped.AddListener(TriggerJump);
+            CharacterEventHandler.OnCharacterCrouched.AddListener(TriggerCrouch);
+            CharacterEventHandler.OnCharacterDeath.AddListener(TriggerDeath);
+            CharacterEventHandler.OnCharacterRevive.AddListener(TriggerRevive);
         }
 
        
         private void OnDisable()
         {
             CharacterEventHandler.OnCharacterJumped.RemoveListener(TriggerJump);
+            CharacterEventHandler.OnCharacterCrouched.RemoveListener(TriggerCrouch);
+            CharacterEventHandler.OnCharacterDeath.RemoveListener(TriggerDeath);
+            CharacterEventHandler.OnCharacterRevive.RemoveListener(TriggerRevive);
+
         }
 
 
@@ -50,5 +60,18 @@ namespace RobotDreams.CharacterSystem
             Animator.SetTrigger(jumpId);
         }
 
+        private void TriggerCrouch()
+        {
+            Animator.SetBool(crouchId, CharacterController.Crouched);
+        }
+
+        private void TriggerDeath()
+        {
+            Animator.SetTrigger(deathId);
+        }
+        private void TriggerRevive()
+        {
+            Animator.SetTrigger(ReviveId);
+        }
     }
 }

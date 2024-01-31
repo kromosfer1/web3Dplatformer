@@ -9,6 +9,7 @@ namespace RobotDreams.CharacterSystem
     {
         float CurrentSpeed { get; }
         bool IsGrounded { get; }
+        bool Crouched {  get; }
 
         void Move(Vector3 direction);
         void Jump();

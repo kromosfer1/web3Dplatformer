@@ -17,6 +17,8 @@ namespace RobotDreams.CharacterSystem
 
         public abstract bool IsGrounded { get; }
 
+        public abstract bool Crouched { get; protected set; }
+
         public abstract void Crouch();
 
         public abstract void Jump();

@@ -1,7 +1,6 @@
 {
   "dependencies": {
     "com.chark.scriptable-events": "https://github.com/chark/scriptable-events.git#upm",
-    "com.robotdreams.charactersystem": "file:C:/UnityProjects/web3Dplatformer/Packages/CharacterSystem",
     "com.unity.cinemachine": "2.9.7",
     "com.unity.collab-proxy": "2.2.0",
     "com.unity.feature.development": "1.0.1",

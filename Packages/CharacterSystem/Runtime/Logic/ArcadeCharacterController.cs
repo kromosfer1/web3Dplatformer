@@ -1,16 +1,20 @@
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
-using UnityEngine.EventSystems;
 
 namespace RobotDreams.CharacterSystem
 {
     public class ArcadeCharacterController : CharacterControllerBase
     {
         private CharacterController characterController;
-        protected CharacterController CharacterController { get { return characterController == null ? 
-                    characterController = GetComponentInParent<CharacterController>() 
-                    : characterController; } }
+        protected CharacterController CharacterController
+        {
+            get
+            {
+                return characterController == null ?
+                    characterController = GetComponentInParent<CharacterController>()
+                    : characterController;
+            }
+        }
 
         private CharacterEventHandler characterEventHandler;
         private CharacterEventHandler CharacterEventHandler
@@ -43,36 +47,42 @@ namespace RobotDreams.CharacterSystem
         private bool canMove;
         public override bool CanMove { get => canMove; protected set => canMove = value; }
 
+        private bool crouched;
+        public override bool Crouched { get => crouched; protected set => crouched = value; }
 
-
+        [SerializeField] [Range(0f, -20.0f)]
+        private float _gravity = -20.0f;
         [SerializeField]
-        private float gravity = 20.0f;
+        private float _fallAcceleration = 10.0f;
+        [SerializeField]
+        private float _maxFallSpeed = 40.0f;
+        [SerializeField]
+        private float _jumpEndedEarlyModifier = 3f;
         [SerializeField]
         private float slopeForce = 3.0f;
         [SerializeField]
         private float smoothTurningTime = 0.05f;
         private float _currentVelocity;
 
-
         private Vector3 movementDirection = Vector3.zero;
         private float slopeForceRayLength = 1.5f;
         private Vector3 force = Vector3.zero;
         private Rigidbody lastInteractedRigidbody;
-
+        public Transform CharacterTransform;
 
         private void FixedUpdate()
         {
+            ApplyGravity();
             ApplyForceToRigidbodies();
         }
 
         private void Update()
         {
-            if(IsGrounded)
+            if (IsGrounded)
             {
                 HandleSlope();
             }
 
-            ApplyGravity();
             ApplyMovement();
         }
 
@@ -80,7 +90,7 @@ namespace RobotDreams.CharacterSystem
         {
             if (!canMove) return;
 
-            throw new System.NotImplementedException();
+            CharacterEventHandler.OnCharacterCrouched.Invoke();
         }
 
         public override void Jump()
@@ -102,21 +112,55 @@ namespace RobotDreams.CharacterSystem
             movementDirection.y = CharacterMovementData.JumpForce;
         }
 
+        public void ApplyCrouch()
+        {
+            crouched = !crouched;
+
+            if (crouched == true)
+            {
+                characterController.height = characterController.height - CharacterMovementData.CrouchingSpeed * Time.deltaTime;
+                if (characterController.height <= CharacterMovementData.CrouchHeight)
+                    characterController.height = CharacterMovementData.CrouchHeight;
+            }
+
+            if (!crouched == false)
+            {
+                characterController.height = characterController.height + CharacterMovementData.CrouchingSpeed * Time.deltaTime;
+
+                if (characterController.height < CharacterMovementData.NormalHeight)
+                    CharacterTransform.position = CharacterTransform.position + CharacterMovementData.CharacterOffset * Time.deltaTime;
+
+                if (characterController.height >= CharacterMovementData.NormalHeight)
+                    characterController.height = CharacterMovementData.NormalHeight;
+
+            }
+        }
+
         private void ApplyMovement()
         {
             var moveDir = IsGrounded ? movementDirection : movementDirection * 0.5f;
+
             CharacterController.Move(moveDir * CharacterMovementData.MaxSpeed * Time.deltaTime);
 
             if (CharacterController.velocity.sqrMagnitude == 0) return;
 
             var targetAngle = Mathf.Atan2(moveDir.x, moveDir.z) * Mathf.Rad2Deg;
             var angle = Mathf.SmoothDampAngle(transform.eulerAngles.y, targetAngle, ref _currentVelocity, smoothTurningTime);
-            transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);           
+            transform.rotation = Quaternion.Euler(0.0f, angle, 0.0f);
         }
 
         private void ApplyGravity()
         {
-            movementDirection.y -= gravity * (Time.deltaTime * 0.5f);
+            if (IsGrounded && movementDirection.y <= 0)
+            {
+                movementDirection.y = _gravity * (Time.deltaTime * 0.5f);
+            }
+            else
+            {
+                var inAirGravity = _fallAcceleration * Time.fixedDeltaTime;
+                if (movementDirection.y > 0) inAirGravity *= _jumpEndedEarlyModifier;
+                movementDirection.y = Mathf.MoveTowards(movementDirection.y, -_maxFallSpeed, inAirGravity * Time.fixedDeltaTime);
+            }
         }
 
         private void HandleSlope()
@@ -149,11 +193,11 @@ namespace RobotDreams.CharacterSystem
                 return;
 
 
-                // Apply the force to the Rigidbody
-                lastInteractedRigidbody.AddForce(force);
+            // Apply the force to the Rigidbody
+            lastInteractedRigidbody.AddForce(force);
 
-                // Reset the force
-                force = Vector3.zero;
+            // Reset the force
+            force = Vector3.zero;
         }
 
         private void OnControllerColliderHit(ControllerColliderHit hit)
