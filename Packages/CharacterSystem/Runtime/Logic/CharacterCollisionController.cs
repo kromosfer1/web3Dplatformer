@@ -14,6 +14,14 @@ namespace RobotDreams.CharacterSystem
             {
                 collectable.Collect();
             }
+
+            Checkpoint checkpoint = other.GetComponent<Checkpoint>();
+
+            if (checkpoint != null)
+            {
+                var checkpointController = gameObject.GetComponent<CheckpointCharacter>();
+                checkpointController.SpawnPoint = checkpoint.lastCheckpoint;
+            }
         }
     }
 }

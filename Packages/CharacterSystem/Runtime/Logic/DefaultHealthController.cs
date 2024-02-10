@@ -1,8 +1,4 @@
-using CHARK.ScriptableEvents.Events;
-using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.SceneManagement;
 
 namespace RobotDreams.CharacterSystem
 {
@@ -18,6 +14,9 @@ namespace RobotDreams.CharacterSystem
                     : characterEventHandler;
             }
         }
+        private CheckpointCharacter checkpointCharacter => gameObject.GetComponent<CheckpointCharacter>();
+
+
         private void OnEnable()
         {
             CharacterEventHandler.OnReviveRequested.AddListener(ReviveCharacter);
@@ -31,6 +30,19 @@ namespace RobotDreams.CharacterSystem
             ReviveCharacter();
         }
 
+        private void Update()
+        {
+            //Checkpoint Deneme if'i bunu sil
+            if (gameObject.transform.position.y < -20)
+            {
+                ReviveCharacter();
+            }
+
+            if(Input.GetKeyDown(KeyCode.R))
+            {
+                ReviveCharacter();
+            }
+        }
         public override void Heal(float health)
         {
             CurrentHealth = Mathf.Clamp(CurrentHealth + health, 0, HealthData.MaxHealth);
@@ -50,15 +62,17 @@ namespace RobotDreams.CharacterSystem
 
         public override void ReviveCharacter()
         {
-            base.ReviveCharacter();                   
+            base.ReviveCharacter();     
+            gameObject.transform.position = new Vector3(10,10,10);
             CurrentHealth = HealthData.MaxHealth;
             CharacterEventHandler.OnCharacterRevive.Invoke();
+            Debug.Log("spawned");
         }
 
         public override void KillCharacter()
         {
             base.KillCharacter();
-            characterEventHandler.OnCharacterDeath.Invoke();        
+            characterEventHandler.OnCharacterDeath.Invoke();
 
         }
     }
